@@ -88,4 +88,88 @@ The resulting file is saved as `sub_area_simple.geojson` in this repo.
 sf::write_sf(sub_area_simple, "sub_area_simple.geojson")
 ```
 
+```{r, eval=FALSE}
+
+```
+
+There are various ways to break-up cities into divisions, which can be useful for visualisation or increasing responsiveness in software such as abstreet.
+There are many ways to divide-up cities, the simplest being to use existing boundaries, that we will try in this case:
+
+```{r}
+u = "http://geoportal1-ons.opendata.arcgis.com/datasets/deeb99fdf09949bc8ed4dc95c80da279_4.geojson"
+uk_consituencies = sf::read_sf(u)
+plot(uk_consituencies$geometry)
+# u_constituencies = "https://api.os.uk/downloads/v1/products/BoundaryLine/downloads?area=GB&format=GeoPackage&redirect"
+```
+
+Let's filter-out those based near Leeds:
+
+```{r}
+leedsc = uk_consituencies[sub_area_concave, ]
+plot(sub_area_simple, reset = FALSE)
+plot(leedsc$geometry, add = TRUE)
+```
+
+There are 5 main areas that have a substantial chunk in Leeds:
+
+```{r}
+sub2 = sub_area_simple %>% 
+  sf::st_buffer(0.0001)
+leedsci = sf::st_intersection(leedsc, sub2)
+# mapview::mapview(leedsc) + mapview::mapview(sub2)
+mapview::mapview(leedsci)
+leedsci$area = sf::st_area(leedsci)
+s = quantile(leedsci$area)
+# class(s)
+# s[2]
+leedsci_large = leedsci %>% 
+  filter(area > s[2])
+leedsci_large$pcon16nm
+```
+
+I'll edit them manually, combining Leeds North East and Leeds North West:
+
+```{r}
+leeds_central = leedsci_large %>% 
+  filter(pcon16nm == "Leeds Central")
+# mapview::mapview(leeds_central) + mapview::mapview(sub2)
+# sf::write_sf(leeds_central, "leeds_central.geojson")
+
+leeds_east = leedsci_large %>% filter(pcon16nm == "Leeds East")
+# mapview::mapview(leeds_east) 
+
+# leeds_east_edited = leedsci_large %>% 
+#   mapedit::editFeatures()
+# leeds_east_edited = leeds_east_edited$geometry[6]
+# leeds_east_edited = sf::st_intersection(leeds_east_edited, sub2)
+# sf::write_sf(leeds_east_edited, "leeds_east_edited.geojson")
+leeds_east_edited = sf::read_sf("leeds_east_edited.geojson")
+mapview::mapview(leeds_east_edited)
+
+# leeds_north_edited = leedsci_large %>%
+#   mapedit::editFeatures()
+# leeds_north_edited = leeds_north_edited$geometry[6]
+# sf::write_sf(leeds_north_edited, "leeds_north_edited.geojson")
+leeds_north_edited = sf::read_sf("leeds_north_edited.geojson")
+mapview::mapview(leeds_north_edited)
+
+# leeds_west_edited = leedsci_large %>%
+#   mapedit::editFeatures()
+# leeds_west_edited = leeds_west_edited$geometry[6]
+# leeds_west_edited = sf::st_intersection(leeds_west_edited, sub2)
+# sf::write_sf(leeds_west_edited, "leeds_west_edited.geojson")
+leeds_west_edited = sf::read_sf("leeds_west_edited.geojson")
+mapview::mapview(leeds_west_edited)
+```
+
+Alltogether, these are:
+
+```{r}
+mapview::mapview(leeds_central) +
+  mapview::mapview(leeds_east_edited) +
+  mapview::mapview(leeds_west_edited) +
+  mapview::mapview(leeds_north_edited) 
+```
+
+
 

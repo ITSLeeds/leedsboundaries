@@ -38,3 +38,35 @@ A simplified version of the previous polygon is as follows:
 ![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 The resulting file is saved as `sub_area_simple.geojson` in this repo.
+
+There are various ways to break-up cities into divisions, which can be
+useful for visualisation or increasing responsiveness in software such
+as abstreet. There are many ways to divide-up cities, the simplest being
+to use existing boundaries, that we will try in this case:
+
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+Let’s filter-out those based near Leeds:
+
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+There are 5 main areas that have a substantial chunk in Leeds:
+
+    #> Warning in st_buffer.sfc(st_geometry(x), dist, nQuadSegs, endCapStyle =
+    #> endCapStyle, : st_buffer does not correctly buffer longitude/latitude data
+    #> Warning: attribute variables are assumed to be spatially constant throughout all
+    #> geometries
+
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+    #> [1] "Leeds Central"    "Leeds East"       "Leeds North East" "Leeds North West"
+    #> [5] "Leeds West"
+
+I’ll edit them manually, combining Leeds North East and Leeds North
+West:
+
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->![](README_files/figure-gfm/unnamed-chunk-14-3.png)<!-- -->
+
+Alltogether, these are:
+
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
